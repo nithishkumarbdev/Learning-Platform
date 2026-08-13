@@ -19,7 +19,14 @@
     "release": "bash scripts/release.sh",
     "build:release": "VITE_APP_VERSION=$(node -p \"require('./package.json').version\") VITE_APP_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo local) VITE_APP_ENV=production vite build",
     "sourcemaps:upload": "bash scripts/upload-sourcemaps.sh",
-    "verify": "bun run lint && bun run typecheck && bun run test"
+    "verify": "bun run lint && bun run typecheck && bun run test",
+    "start": "wrangler dev -c dist/server/wrangler.json --ip 0.0.0.0 --port 8080",
+    "e2e": "playwright test",
+    "e2e:report": "playwright show-report",
+    "lhci": "lhci autorun",
+    "vitals:report": "node scripts/vitals-report.mjs",
+    "vitals:baseline": "node scripts/vitals-report.mjs --save-baseline",
+    "verify:all": "bun run lint && bun run typecheck && bun run test && bun run build && bun run e2e"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -79,7 +86,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
-    "@lovable.dev/vite-tanstack-config": "2.9.1",
+    "@lhci/cli": "^0.15.1",
+    "@lovable.dev/vite-tanstack-config": "2.12.0",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
@@ -96,7 +105,8 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "4"
   },
   "overrides": {
     "seroval": "^1.6.2",

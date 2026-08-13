@@ -1,0 +1,44 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "bun run start",
+      "startServerReadyPattern": "Ready|Listening|localhost",
+      "startServerReadyTimeout": 120000,
+      "url": [
+        "http://localhost:8080/",
+        "http://localhost:8080/roadmap",
+        "http://localhost:8080/today",
+        "http://localhost:8080/resources"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "onlyCategories": ["performance", "accessibility", "best-practices", "seo"]
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.85 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:best-practices": ["warn", { "minScore": 0.9 }],
+        "categories:seo": ["error", { "minScore": 0.9 }],
+
+        "first-contentful-paint": ["error", { "maxNumericValue": 1800 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 200 }],
+        "speed-index": ["warn", { "maxNumericValue": 3400 }],
+        "server-response-time": ["warn", { "maxNumericValue": 600 }],
+
+        "uses-text-compression": "warn",
+        "uses-long-cache-ttl": "warn",
+        "unused-javascript": "off",
+        "legacy-javascript": "off"
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci"
+    }
+  }
+}

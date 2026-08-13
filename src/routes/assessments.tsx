@@ -129,7 +129,13 @@ function Quiz({
       </div>
 
       {a.questions.map((q, idx) => (
-        <div key={q.id} className="rounded-xl border border-border bg-card p-5">
+        <div
+          key={q.id}
+          data-question={q.id}
+          role="group"
+          aria-label={`Question ${idx + 1}: ${q.q}`}
+          className="rounded-xl border border-border bg-card p-5"
+        >
           <div className="text-xs text-muted-foreground">Q{idx + 1}</div>
           <h3 className="mt-1 font-medium">{q.q}</h3>
           <div className="mt-3 space-y-2">

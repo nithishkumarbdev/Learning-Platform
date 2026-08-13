@@ -37,6 +37,7 @@ import { Route as AssessmentsRouteImport } from './routes/assessments'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as ApiPlannerRouteImport } from './routes/api-planner'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiSessionRouteImport } from './routes/api/session'
 import { Route as ApiPublicErrorsRouteImport } from './routes/api/public/errors'
 
 const WeeklyRoute = WeeklyRouteImport.update({
@@ -179,6 +180,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSessionRoute = ApiSessionRouteImport.update({
+  id: '/api/session',
+  path: '/api/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicErrorsRoute = ApiPublicErrorsRouteImport.update({
   id: '/api/public/errors',
   path: '/api/public/errors',
@@ -214,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/today': typeof TodayRoute
   '/tools': typeof ToolsRoute
   '/weekly': typeof WeeklyRoute
+  '/api/session': typeof ApiSessionRoute
   '/api/public/errors': typeof ApiPublicErrorsRoute
 }
 export interface FileRoutesByTo {
@@ -245,6 +252,7 @@ export interface FileRoutesByTo {
   '/today': typeof TodayRoute
   '/tools': typeof ToolsRoute
   '/weekly': typeof WeeklyRoute
+  '/api/session': typeof ApiSessionRoute
   '/api/public/errors': typeof ApiPublicErrorsRoute
 }
 export interface FileRoutesById {
@@ -277,6 +285,7 @@ export interface FileRoutesById {
   '/today': typeof TodayRoute
   '/tools': typeof ToolsRoute
   '/weekly': typeof WeeklyRoute
+  '/api/session': typeof ApiSessionRoute
   '/api/public/errors': typeof ApiPublicErrorsRoute
 }
 export interface FileRouteTypes {
@@ -310,6 +319,7 @@ export interface FileRouteTypes {
     | '/today'
     | '/tools'
     | '/weekly'
+    | '/api/session'
     | '/api/public/errors'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -341,6 +351,7 @@ export interface FileRouteTypes {
     | '/today'
     | '/tools'
     | '/weekly'
+    | '/api/session'
     | '/api/public/errors'
   id:
     | '__root__'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/today'
     | '/tools'
     | '/weekly'
+    | '/api/session'
     | '/api/public/errors'
   fileRoutesById: FileRoutesById
 }
@@ -404,6 +416,7 @@ export interface RootRouteChildren {
   TodayRoute: typeof TodayRoute
   ToolsRoute: typeof ToolsRoute
   WeeklyRoute: typeof WeeklyRoute
+  ApiSessionRoute: typeof ApiSessionRoute
   ApiPublicErrorsRoute: typeof ApiPublicErrorsRoute
 }
 
@@ -605,6 +618,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/session': {
+      id: '/api/session'
+      path: '/api/session'
+      fullPath: '/api/session'
+      preLoaderRoute: typeof ApiSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/errors': {
       id: '/api/public/errors'
       path: '/api/public/errors'
@@ -644,6 +664,7 @@ const rootRouteChildren: RootRouteChildren = {
   TodayRoute: TodayRoute,
   ToolsRoute: ToolsRoute,
   WeeklyRoute: WeeklyRoute,
+  ApiSessionRoute: ApiSessionRoute,
   ApiPublicErrorsRoute: ApiPublicErrorsRoute,
 }
 export const routeTree = rootRouteImport

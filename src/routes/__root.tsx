@@ -153,6 +153,9 @@ function RootComponent() {
 
   useEffect(() => {
     initErrorTracking();
+    // Hydration marker: SSR markup is interactive only once this effect has run.
+    // E2E tests wait on it instead of guessing with timeouts.
+    document.documentElement.dataset.hydrated = "true";
     return router.subscribe("onResolved", ({ toLocation }) => {
       addBreadcrumb("navigation", toLocation.pathname);
     });

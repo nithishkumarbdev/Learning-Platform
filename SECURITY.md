@@ -87,3 +87,46 @@ bun run test                                  # rotation, CSRF, cookie policy
 curl -sI https://<host>/ | grep -Ei 'strict-transport|content-security|x-app-release'
 curl -s -o /dev/null -w '%{http_code}\n' -X POST https://<host>/api/public/errors -d '{}'   # 400
 ```
+
+## Security-header contract (verified in CI)
+
+| Header | Value | Scope |
+| ------ | ----- | ----- |
+| `content-security-policy` | `default-src 'self'` … `object-src 'none'` | production |
+| `strict-transport-security` | `max-age=63072000; includeSubDomains; preload` | production |
+| `x-frame-options` | `SAMEORIGIN` | always |
+| `x-content-type-options` | `nosniff` | always |
+| `referrer-policy` | `strict-origin-when-cross-origin` | always |
+| `permissions-policy` | `camera=(), microphone=(), geolocation=()` | always |
+| `cross-origin-opener-policy` | `same-origin` | always |
+| `x-app-release` | build id | always |
+| `cache-control` | `private, no-store` on mutations, path policy on reads | always |
+
+CSP/HSTS are production-only so Vite's dev HMR (inline eval + ws) keeps working.
+
+Verify any environment:
+
+```bash
+bash scripts/verify-headers.sh https://your-host     # pass/fail per header
+bun run e2e                                          # 20 e2e checks
+E2E_BASE_URL=http://localhost:8080 E2E_ENV=production bunx playwright test e2e/security-headers.spec.ts
+```
+
+`GET /api/session` issues the signed CSRF cookie, `POST /api/session` is the
+reference CSRF-gated mutation, `DELETE` clears it — all three are covered by
+`e2e/session.spec.ts` and `e2e/csrf.spec.ts`.
+
+## Automated quality gates
+
+| Gate | Command | CI job |
+| ---- | ------- | ------ |
+| Lint · format · types · unit | `bun run verify` | `verify` |
+| E2E (headers, CSRF, assessment, error paths) | `bun run e2e` | `e2e` |
+| Production header contract | `bash scripts/verify-headers.sh` | `headers` |
+| Lighthouse + Core Web Vitals thresholds | `bun run lhci` | `lighthouse` |
+| Before/after vitals report | `bun run vitals:report` | `lighthouse` (job summary) |
+
+Thresholds live in `.lighthouserc.json` (performance ≥ 0.85, a11y ≥ 0.95,
+LCP ≤ 2500 ms, CLS ≤ 0.1, TBT ≤ 200 ms). `bun run vitals:baseline` promotes the
+current run to `.lighthouse-baseline.json`, and CI fails when a metric regresses
+past the per-metric tolerance.
