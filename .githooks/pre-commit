@@ -1,0 +1,29 @@
+#!/bin/sh
+# Pre-commit hook: format, lint-fix, typecheck and test staged work.
+# Enabled automatically by `bun install` (see the "prepare" script in package.json),
+# or manually with: git config core.hooksPath .githooks
+
+set -e
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|js|jsx|json|css|md)$' || true)
+
+if [ -z "$STAGED" ]; then
+  exit 0
+fi
+
+echo "→ Prettier"
+echo "$STAGED" | xargs npx prettier --write --ignore-unknown
+
+echo "→ ESLint --fix"
+echo "$STAGED" | grep -E '\.(ts|tsx|js|jsx)$' | xargs -r npx eslint --fix
+
+# Re-stage anything the formatters changed.
+echo "$STAGED" | xargs git add
+
+echo "→ Typecheck"
+npx tsc --noEmit
+
+echo "→ Tests"
+npx vitest run
+
+echo "✓ pre-commit checks passed"
